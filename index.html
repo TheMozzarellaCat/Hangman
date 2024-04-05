@@ -1,3 +1,6 @@
+
+
+User
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -14,7 +17,7 @@
       <div id="letters"></div>
       <div id="incorrect-letters"></div>
     </div>
-
+    <input type="text" id="keyboard-input" style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; opacity: 0;" />
     <div class="popup" id="popup">
       <div class="popup-content">
         <div id="popup-message"></div>
@@ -23,6 +26,32 @@
     </div>
 
     <script>
+      function focusInput() {
+        const inputElement = document.getElementById("keyboard-input");
+        inputElement.focus();
+  }
+
+  window.onload = function() {
+    focusInput();
+    init()
+  };
+  window.addEventListener("resize", function() {
+    // Check if the virtual keyboard is open by comparing the window height before and after resizing
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const prevVh = window.prevVh || vh;
+    
+    if (vh < prevVh) {
+      // Virtual keyboard is likely open, adjust layout
+      document.body.classList.add("keyboard-open");
+    } else {
+      // Virtual keyboard is likely closed, remove adjustments
+      document.body.classList.remove("keyboard-open");
+    }
+    
+    // Store the current viewport height for comparison in the next resize event
+    window.prevVh = vh;
+  });
+
       const words = ["javascript", "sql", "html", "programming", "depression"];
 
       let selectedWord = words[Math.floor(Math.random() * words.length)];

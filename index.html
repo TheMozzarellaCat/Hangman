@@ -28,8 +28,6 @@
     <div id="letters"></div>
     <div id="incorrect-letters"></div>
   </div>
-  <!-- Visible input field for virtual keyboard -->
-  <input type="text" id="keyboard-input" />
   <div class="popup" id="popup">
     <div class="popup-content">
       <div id="popup-message"></div>
@@ -39,10 +37,8 @@
 
   <script>
    function focusInput() {
-      const inputElement = document.getElementById("keyboard-input");
-      inputElement.style.opacity = '1'; // Make input field visible
-      inputElement.style.pointerEvents = 'auto'; // Allow interactions with input field
-      inputElement.focus();
+      // Directly focus on the document body to trigger the virtual keyboard
+      document.body.focus();
     }
 
     window.onload = function() {

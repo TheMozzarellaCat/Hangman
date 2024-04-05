@@ -38,9 +38,10 @@
   </div>
 
   <script>
-    // Your existing JavaScript code here
-    function focusInput() {
+   function focusInput() {
       const inputElement = document.getElementById("keyboard-input");
+      inputElement.style.opacity = '1'; // Make input field visible
+      inputElement.style.pointerEvents = 'auto'; // Allow interactions with input field
       inputElement.focus();
     }
 

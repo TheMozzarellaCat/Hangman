@@ -1,223 +1,220 @@
-
-
-User
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hangman Game</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div id="hangman-container">
-      <div id="word-container"></div>
-      <div id="guesses-left"></div>
-      <canvas id="hangman-canvas" width="200" height="200"></canvas>
-      <div id="letters"></div>
-      <div id="incorrect-letters"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hangman Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Additional CSS for virtual keyboard */
+    #keyboard-input {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 9999;
+      /* Adjust appearance to make it visible */
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hangman-container">
+    <div id="word-container"></div>
+    <div id="guesses-left"></div>
+    <canvas id="hangman-canvas" width="200" height="200"></canvas>
+    <div id="letters"></div>
+    <div id="incorrect-letters"></div>
+  </div>
+  <!-- Visible input field for virtual keyboard -->
+  <input type="text" id="keyboard-input" />
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <div id="popup-message"></div>
+      <button id="play-again-btn">Play Again</button>
     </div>
-    <input type="text" id="keyboard-input" style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9999; opacity: 0;" />
-    <div class="popup" id="popup">
-      <div class="popup-content">
-        <div id="popup-message"></div>
-        <button id="play-again-btn">Play Again</button>
-      </div>
-    </div>
+  </div>
 
-    <script>
-      function focusInput() {
-        const inputElement = document.getElementById("keyboard-input");
-        inputElement.focus();
+  <script>
+    // Your existing JavaScript code here
+    function focusInput() {
+      const inputElement = document.getElementById("keyboard-input");
+      inputElement.focus();
+    }
+
+    window.onload = function() {
+      focusInput();
+      init()
+    };
+
+    const words = ["javascript", "sql", "html", "programming", "depression"];
+
+let selectedWord = words[Math.floor(Math.random() * words.length)];
+let guessedLetters = [];
+let guessedIncorrect = [];
+let guessesLeft = 8;
+let gameOver = false;
+
+const canvas = document.getElementById("hangman-canvas");
+const ctx = canvas.getContext("2d");
+
+function drawHangman(incorrectGuesses) {
+  switch (incorrectGuesses) {
+    case 1:
+      ctx.beginPath();
+      ctx.moveTo(20, 50);
+      ctx.lineTo(20, 350);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(20, 50);
+      ctx.lineTo(100, 50);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(100, 50);
+      ctx.lineTo(100, 75);
+      ctx.stroke();
+      break;
+    case 2:
+      ctx.beginPath();
+      ctx.arc(100, 90, 15, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    case 3:
+      ctx.beginPath();
+      ctx.moveTo(100, 105);
+      ctx.lineTo(100, 140);
+      ctx.stroke();
+      break;
+    case 4:
+      ctx.beginPath();
+      ctx.moveTo(100, 115);
+      ctx.lineTo(90, 140);
+      ctx.stroke();
+      break;
+    case 5:
+      ctx.beginPath();
+      ctx.moveTo(100, 115);
+      ctx.lineTo(110, 140);
+      ctx.stroke();
+      break;
+    case 6:
+      ctx.beginPath();
+      ctx.moveTo(100, 140);
+      ctx.lineTo(95, 170);
+      ctx.stroke();
+      break;
+    case 7:
+      ctx.beginPath();
+      ctx.moveTo(100, 140);
+      ctx.lineTo(105, 170);
+      ctx.stroke();
+      break;
+  }
+}
+
+function init() {
+  displayWord();
+  displayGuessesLeft();
+}
+
+function displayWord() {
+  const wordContainer = document.getElementById("word-container");
+  const displayWord = selectedWord
+    .split("")
+    .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
+    .join(" ");
+  wordContainer.textContent = displayWord;
+}
+
+function displayGuessesLeft() {
+  const guessesLeftContainer = document.getElementById("guesses-left");
+  guessesLeftContainer.textContent = `Guesses left: ${guessesLeft}`;
+}
+
+function displayIncorrectLetters() {
+  const incorrectLettersContainer =
+    document.getElementById("incorrect-letters");
+  incorrectLettersContainer.textContent = `Incorrect letters: ${guessedIncorrect.join(
+    ", "
+  )}`;
+}
+
+function guess(letter) {
+  if (gameOver) return; // Do nothing if the game is already over
+
+  if (selectedWord.includes(letter)) {
+    if (!guessedLetters.includes(letter)) {
+      guessedLetters.push(letter);
+    }
+  } else {
+    if (!guessedIncorrect.includes(letter)) {
+      guessedIncorrect.push(letter);
+      guessesLeft--;
+      drawHangman(8 - guessesLeft);
+    }
   }
 
-  window.onload = function() {
-    focusInput();
-    init()
-  };
-  window.addEventListener("resize", function() {
-    // Check if the virtual keyboard is open by comparing the window height before and after resizing
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    const prevVh = window.prevVh || vh;
-    
-    if (vh < prevVh) {
-      // Virtual keyboard is likely open, adjust layout
-      document.body.classList.add("keyboard-open");
-    } else {
-      // Virtual keyboard is likely closed, remove adjustments
-      document.body.classList.remove("keyboard-open");
-    }
-    
-    // Store the current viewport height for comparison in the next resize event
-    window.prevVh = vh;
+  displayWord();
+  displayGuessesLeft();
+  displayIncorrectLetters();
+  checkWinOrLoss();
+}
+
+function checkWinOrLoss() {
+  if (
+    selectedWord
+      .split("")
+      .every((letter) => guessedLetters.includes(letter))
+  ) {
+    endGame("Congratulations! You won!");
+  } else if (guessesLeft === 0) {
+    endGame(`You lost! The word was "${selectedWord}".`);
+  }
+}
+
+function endGame(message) {
+  gameOver = true;
+  const popup = document.getElementById("popup");
+  const popupMessage = document.getElementById("popup-message");
+  popupMessage.textContent = message;
+  popup.style.display = "flex";
+}
+
+function resetGame() {
+  selectedWord = words[Math.floor(Math.random() * words.length)];
+  guessedLetters = [];
+  guessedIncorrect = [];
+  guessesLeft = 8;
+  clearCanvas();
+  init();
+  gameOver = false;
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+window.onload = init;
+
+// Function to handle keyboard events
+document.addEventListener("keydown", function (event) {
+  // Check if the pressed key is a letter
+  if (event.keyCode >= 65 && event.keyCode <= 90) {
+    const letter = String.fromCharCode(event.keyCode).toLowerCase();
+    guess(letter);
+  }
+});
+
+// Play again button click event
+document
+  .getElementById("play-again-btn")
+  .addEventListener("click", () => {
+    const popup = document.getElementById("popup");
+    popup.style.display = "none";
+    resetGame();
   });
-
-      const words = ["javascript", "sql", "html", "programming", "depression"];
-
-      let selectedWord = words[Math.floor(Math.random() * words.length)];
-      let guessedLetters = [];
-      let guessedIncorrect = [];
-      let guessesLeft = 8;
-      let gameOver = false;
-
-      const canvas = document.getElementById("hangman-canvas");
-      const ctx = canvas.getContext("2d");
-
-      function drawHangman(incorrectGuesses) {
-        switch (incorrectGuesses) {
-          case 1:
-            ctx.beginPath();
-            ctx.moveTo(20, 50);
-            ctx.lineTo(20, 350);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(20, 50);
-            ctx.lineTo(100, 50);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(100, 50);
-            ctx.lineTo(100, 75);
-            ctx.stroke();
-            break;
-          case 2:
-            ctx.beginPath();
-            ctx.arc(100, 90, 15, 0, Math.PI * 2);
-            ctx.stroke();
-            break;
-          case 3:
-            ctx.beginPath();
-            ctx.moveTo(100, 105);
-            ctx.lineTo(100, 140);
-            ctx.stroke();
-            break;
-          case 4:
-            ctx.beginPath();
-            ctx.moveTo(100, 115);
-            ctx.lineTo(90, 140);
-            ctx.stroke();
-            break;
-          case 5:
-            ctx.beginPath();
-            ctx.moveTo(100, 115);
-            ctx.lineTo(110, 140);
-            ctx.stroke();
-            break;
-          case 6:
-            ctx.beginPath();
-            ctx.moveTo(100, 140);
-            ctx.lineTo(95, 170);
-            ctx.stroke();
-            break;
-          case 7:
-            ctx.beginPath();
-            ctx.moveTo(100, 140);
-            ctx.lineTo(105, 170);
-            ctx.stroke();
-            break;
-        }
-      }
-
-      function init() {
-        displayWord();
-        displayGuessesLeft();
-      }
-
-      function displayWord() {
-        const wordContainer = document.getElementById("word-container");
-        const displayWord = selectedWord
-          .split("")
-          .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
-          .join(" ");
-        wordContainer.textContent = displayWord;
-      }
-
-      function displayGuessesLeft() {
-        const guessesLeftContainer = document.getElementById("guesses-left");
-        guessesLeftContainer.textContent = `Guesses left: ${guessesLeft}`;
-      }
-
-      function displayIncorrectLetters() {
-        const incorrectLettersContainer =
-          document.getElementById("incorrect-letters");
-        incorrectLettersContainer.textContent = `Incorrect letters: ${guessedIncorrect.join(
-          ", "
-        )}`;
-      }
-
-      function guess(letter) {
-        if (gameOver) return; // Do nothing if the game is already over
-
-        if (selectedWord.includes(letter)) {
-          if (!guessedLetters.includes(letter)) {
-            guessedLetters.push(letter);
-          }
-        } else {
-          if (!guessedIncorrect.includes(letter)) {
-            guessedIncorrect.push(letter);
-            guessesLeft--;
-            drawHangman(8 - guessesLeft);
-          }
-        }
-
-        displayWord();
-        displayGuessesLeft();
-        displayIncorrectLetters();
-        checkWinOrLoss();
-      }
-
-      function checkWinOrLoss() {
-        if (
-          selectedWord
-            .split("")
-            .every((letter) => guessedLetters.includes(letter))
-        ) {
-          endGame("Congratulations! You won!");
-        } else if (guessesLeft === 0) {
-          endGame(`You lost! The word was "${selectedWord}".`);
-        }
-      }
-
-      function endGame(message) {
-        gameOver = true;
-        const popup = document.getElementById("popup");
-        const popupMessage = document.getElementById("popup-message");
-        popupMessage.textContent = message;
-        popup.style.display = "flex";
-      }
-
-      function resetGame() {
-        selectedWord = words[Math.floor(Math.random() * words.length)];
-        guessedLetters = [];
-        guessedIncorrect = [];
-        guessesLeft = 8;
-        clearCanvas();
-        init();
-        gameOver = false;
-      }
-
-      function clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-
-      window.onload = init;
-
-      // Function to handle keyboard events
-      document.addEventListener("keydown", function (event) {
-        // Check if the pressed key is a letter
-        if (event.keyCode >= 65 && event.keyCode <= 90) {
-          const letter = String.fromCharCode(event.keyCode).toLowerCase();
-          guess(letter);
-        }
-      });
-
-      // Play again button click event
-      document
-        .getElementById("play-again-btn")
-        .addEventListener("click", () => {
-          const popup = document.getElementById("popup");
-          popup.style.display = "none";
-          resetGame();
-        });
-    </script>
-  </body>
+</script>
+</body>
 </html>

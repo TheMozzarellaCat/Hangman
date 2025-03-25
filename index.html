@@ -35,10 +35,12 @@
             vertical-align: top;
             background-color: #fff;
             border: 1px solid #000;
-            font-size: 32px;
+            font-size: 48px; /* Increased font size for visibility */
             line-height: 100px;
             cursor: pointer;
             box-sizing: border-box;
+            font-weight: bold; /* Make the X and O bold */
+            color: #333; /* Dark color for better contrast */
         }
 
         .status {
@@ -57,6 +59,21 @@
 
         .reset:hover {
             background-color: #45a049;
+        }
+
+        /* Ensure the game is responsive on mobile */
+        @media screen and (max-width: 400px) {
+            .container {
+                width: 280px; /* Reduce container width on smaller screens */
+            }
+            .board {
+                width: 270px;
+                height: 270px;
+            }
+            .cell {
+                font-size: 40px; /* Adjust font size for smaller screens */
+                line-height: 80px;
+            }
         }
     </style>
 </head>

@@ -87,15 +87,15 @@
     </div>
 
     <script>
-        let currentPlayer = 'X';
-        let gameBoard = ['', '', '', '', '', '', '', '', ''];
-        const boardElement = document.getElementById('board');
-        const statusElement = document.getElementById('status');
-        const resetBtn = document.getElementById('resetBtn');
+        var currentPlayer = 'X';
+        var gameBoard = ['', '', '', '', '', '', '', '', ''];
+        var boardElement = document.getElementById('board');
+        var statusElement = document.getElementById('status');
+        var resetBtn = document.getElementById('resetBtn');
 
         // Create the game board dynamically
-        for (let i = 0; i < 9; i++) {
-            const cell = document.createElement('div');
+        for (var i = 0; i < 9; i++) {
+            var cell = document.createElement('div');
             cell.className = 'cell';
             cell.dataset.index = i;
             cell.addEventListener('click', handleCellClick);
@@ -104,7 +104,7 @@
 
         // Handle cell click
         function handleCellClick(event) {
-            const index = event.target.dataset.index;
+            var index = event.target.dataset.index;
 
             if (gameBoard[index] !== '') {
                 return; // Cell already filled
@@ -114,23 +114,23 @@
             event.target.textContent = currentPlayer;
 
             if (checkWinner()) {
-                statusElement.textContent = `Player ${currentPlayer} wins!`;
+                statusElement.textContent = 'Player ' + currentPlayer + ' wins!';
                 boardElement.removeEventListener('click', handleCellClick); // Disable further clicks
                 return;
             }
 
             // Switch players
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            statusElement.textContent = `Player ${currentPlayer}'s turn`;
+            currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+            statusElement.textContent = 'Player ' + currentPlayer + "'s turn";
 
-            if (gameBoard.every(cell => cell !== '')) {
+            if (gameBoard.every(function(cell) { return cell !== ''; })) {
                 statusElement.textContent = "It's a draw!";
             }
         }
 
         // Check for a winner
         function checkWinner() {
-            const winPatterns = [
+            var winPatterns = [
                 [0, 1, 2],
                 [3, 4, 5],
                 [6, 7, 8],
@@ -141,8 +141,10 @@
                 [2, 4, 6]
             ];
 
-            for (const pattern of winPatterns) {
-                const [a, b, c] = pattern;
+            for (var i = 0; i < winPatterns.length; i++) {
+                var pattern = winPatterns[i];
+                var a = pattern[0], b = pattern[1], c = pattern[2];
+
                 if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
                     return true;
                 }
@@ -157,8 +159,10 @@
             gameBoard = ['', '', '', '', '', '', '', '', ''];
             currentPlayer = 'X';
             statusElement.textContent = "Player X's turn";
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach(cell => cell.textContent = '');
+            var cells = document.querySelectorAll('.cell');
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].textContent = '';
+            }
             boardElement.addEventListener('click', handleCellClick);
         }
     </script>

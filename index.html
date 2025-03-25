@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hangman Game</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     /* Ensure body and html take full width and height */
     html, body {
@@ -125,7 +126,6 @@
 
   <script>
     const words = ["javascript", "sql", "html", "programming", "depression"];
-
     let selectedWord = words[Math.floor(Math.random() * words.length)];
     let guessedLetters = [];
     let guessedIncorrect = [];
@@ -135,7 +135,7 @@
     const canvas = document.getElementById("hangman-canvas");
     const ctx = canvas.getContext("2d");
 
-    function drawHangman(incorrectGuesses) {
+    const drawHangman = (incorrectGuesses) => {
       switch (incorrectGuesses) {
         case 1:
           ctx.beginPath();
@@ -187,37 +187,34 @@
           ctx.stroke();
           break;
       }
-    }
+    };
 
-    function init() {
+    const init = () => {
       displayWord();
       displayGuessesLeft();
-    }
+    };
 
-    function displayWord() {
+    const displayWord = () => {
       const wordContainer = document.getElementById("word-container");
       const displayWord = selectedWord
         .split("")
         .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
         .join(" ");
       wordContainer.textContent = displayWord;
-    }
+    };
 
-    function displayGuessesLeft() {
+    const displayGuessesLeft = () => {
       const guessesLeftContainer = document.getElementById("guesses-left");
       guessesLeftContainer.textContent = `Guesses left: ${guessesLeft}`;
-    }
+    };
 
-    function displayIncorrectLetters() {
-      const incorrectLettersContainer =
-        document.getElementById("incorrect-letters");
-      incorrectLettersContainer.textContent = `Incorrect letters: ${guessedIncorrect.join(
-        ", "
-      )}`;
-    }
+    const displayIncorrectLetters = () => {
+      const incorrectLettersContainer = document.getElementById("incorrect-letters");
+      incorrectLettersContainer.textContent = `Incorrect letters: ${guessedIncorrect.join(", ")}`;
+    };
 
-    function guess(letter) {
-      if (gameOver) return;
+    const guess = (letter) => {
+      if (gameOver) return; // Do nothing if the game is already over
 
       if (selectedWord.includes(letter)) {
         if (!guessedLetters.includes(letter)) {
@@ -235,29 +232,25 @@
       displayGuessesLeft();
       displayIncorrectLetters();
       checkWinOrLoss();
-    }
+    };
 
-    function checkWinOrLoss() {
-      if (
-        selectedWord
-          .split("")
-          .every((letter) => guessedLetters.includes(letter))
-      ) {
+    const checkWinOrLoss = () => {
+      if (selectedWord.split("").every((letter) => guessedLetters.includes(letter))) {
         endGame("Congratulations! You won!");
       } else if (guessesLeft === 0) {
         endGame(`You lost! The word was "${selectedWord}".`);
       }
-    }
+    };
 
-    function endGame(message) {
+    const endGame = (message) => {
       gameOver = true;
       const popup = document.getElementById("popup");
       const popupMessage = document.getElementById("popup-message");
       popupMessage.textContent = message;
       popup.style.display = "flex";
-    }
+    };
 
-    function resetGame() {
+    const resetGame = () => {
       selectedWord = words[Math.floor(Math.random() * words.length)];
       guessedLetters = [];
       guessedIncorrect = [];
@@ -265,20 +258,20 @@
       clearCanvas();
       init();
       gameOver = false;
-    }
+    };
 
-    function clearCanvas() {
+    const clearCanvas = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    };
 
-    window.onload = function () {
+    window.onload = () => {
       init();
       // Focus on the input field to trigger keyboard
       document.getElementById("keyboard-input").focus();
     };
 
     // Function to handle keyboard events
-    document.getElementById("keyboard-input").addEventListener("keydown", function (event) {
+    document.getElementById("keyboard-input").addEventListener("keydown", (event) => {
       if (event.keyCode >= 65 && event.keyCode <= 90) {
         const letter = String.fromCharCode(event.keyCode).toLowerCase();
         guess(letter);
@@ -286,13 +279,11 @@
     });
 
     // Play again button click event
-    document
-      .getElementById("play-again-btn")
-      .addEventListener("click", () => {
-        const popup = document.getElementById("popup");
-        popup.style.display = "none";
-        resetGame();
-      });
+    document.getElementById("play-again-btn").addEventListener("click", () => {
+      const popup = document.getElementById("popup");
+      popup.style.display = "none";
+      resetGame();
+    });
   </script>
 </body>
 </html>

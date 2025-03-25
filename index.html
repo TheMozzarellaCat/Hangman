@@ -1,289 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hangman Game</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Ensure body and html take full width and height */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: block;
+            background-color: #f4f4f4;
+        }
 
-    #hangman-container {
-      text-align: center;
-      padding: 20px;
-    }
+        .container {
+            margin: 50px auto;
+            width: 320px; /* fixed width for layout */
+        }
 
-    #word-container {
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
+        .board {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+            display: block;
+        }
 
-    #guesses-left {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
+        .cell {
+            width: 33.33%;
+            height: 33.33%;
+            display: inline-block;
+            vertical-align: top;
+            background-color: #fff;
+            border: 1px solid #000;
+            font-size: 32px;
+            line-height: 100px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
 
-    #letters, #incorrect-letters {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
+        .status {
+            margin-top: 20px;
+            font-size: 20px;
+        }
 
-    canvas {
-      border: 1px solid #000;
-      margin-bottom: 20px;
-    }
+        .reset {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
 
-    /* Popup styling */
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .popup-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    #popup-message {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    #play-again-btn {
-      font-size: 1rem;
-      padding: 10px 20px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-
-    /* Mobile friendly adjustments */
-    @media (max-width: 600px) {
-      #word-container {
-        font-size: 1.5rem;
-      }
-      #guesses-left {
-        font-size: 1.2rem;
-      }
-      canvas {
-        width: 100%;
-        height: auto;
-      }
-      #keyboard-input {
-        width: 100%;
-        font-size: 18px;
-      }
-    }
-
-    /* Virtual Keyboard adjustments */
-    #keyboard-input {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 9999;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      padding: 10px;
-      opacity: 0;
-    }
-  </style>
+        .reset:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-  <div id="hangman-container">
-    <div id="word-container"></div>
-    <div id="guesses-left"></div>
-    <canvas id="hangman-canvas" width="200" height="200"></canvas>
-    <div id="letters"></div>
-    <div id="incorrect-letters"></div>
-  </div>
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <div id="popup-message"></div>
-      <button id="play-again-btn">Play Again</button>
+    <div class="container">
+        <div class="board" id="board">
+            <!-- 9 divs will be created here dynamically -->
+        </div>
+        <div class="status" id="status">Player X's turn</div>
+        <button class="reset" id="resetBtn">Reset Game</button>
     </div>
-  </div>
-  
-  <!-- Virtual keyboard input field -->
-  <input type="text" id="keyboard-input" style="opacity: 0;">
 
-  <script>
-    const words = ["javascript", "sql", "html", "programming", "depression"];
-    let selectedWord = words[Math.floor(Math.random() * words.length)];
-    let guessedLetters = [];
-    let guessedIncorrect = [];
-    let guessesLeft = 8;
-    let gameOver = false;
+    <script>
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('status');
+        const resetBtn = document.getElementById('resetBtn');
 
-    const canvas = document.getElementById("hangman-canvas");
-    const ctx = canvas.getContext("2d");
-
-    const drawHangman = (incorrectGuesses) => {
-      switch (incorrectGuesses) {
-        case 1:
-          ctx.beginPath();
-          ctx.moveTo(20, 50);
-          ctx.lineTo(20, 350);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(20, 50);
-          ctx.lineTo(100, 50);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(100, 50);
-          ctx.lineTo(100, 75);
-          ctx.stroke();
-          break;
-        case 2:
-          ctx.beginPath();
-          ctx.arc(100, 90, 15, 0, Math.PI * 2);
-          ctx.stroke();
-          break;
-        case 3:
-          ctx.beginPath();
-          ctx.moveTo(100, 105);
-          ctx.lineTo(100, 140);
-          ctx.stroke();
-          break;
-        case 4:
-          ctx.beginPath();
-          ctx.moveTo(100, 115);
-          ctx.lineTo(90, 140);
-          ctx.stroke();
-          break;
-        case 5:
-          ctx.beginPath();
-          ctx.moveTo(100, 115);
-          ctx.lineTo(110, 140);
-          ctx.stroke();
-          break;
-        case 6:
-          ctx.beginPath();
-          ctx.moveTo(100, 140);
-          ctx.lineTo(95, 170);
-          ctx.stroke();
-          break;
-        case 7:
-          ctx.beginPath();
-          ctx.moveTo(100, 140);
-          ctx.lineTo(105, 170);
-          ctx.stroke();
-          break;
-      }
-    };
-
-    const init = () => {
-      displayWord();
-      displayGuessesLeft();
-    };
-
-    const displayWord = () => {
-      const wordContainer = document.getElementById("word-container");
-      const displayWord = selectedWord
-        .split("")
-        .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
-        .join(" ");
-      wordContainer.textContent = displayWord;
-    };
-
-    const displayGuessesLeft = () => {
-      const guessesLeftContainer = document.getElementById("guesses-left");
-      guessesLeftContainer.textContent = `Guesses left: ${guessesLeft}`;
-    };
-
-    const displayIncorrectLetters = () => {
-      const incorrectLettersContainer = document.getElementById("incorrect-letters");
-      incorrectLettersContainer.textContent = `Incorrect letters: ${guessedIncorrect.join(", ")}`;
-    };
-
-    const guess = (letter) => {
-      if (gameOver) return; // Do nothing if the game is already over
-
-      if (selectedWord.includes(letter)) {
-        if (!guessedLetters.includes(letter)) {
-          guessedLetters.push(letter);
+        // Create the game board dynamically
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.index = i;
+            cell.addEventListener('click', handleCellClick);
+            boardElement.appendChild(cell);
         }
-      } else {
-        if (!guessedIncorrect.includes(letter)) {
-          guessedIncorrect.push(letter);
-          guessesLeft--;
-          drawHangman(8 - guessesLeft);
+
+        // Handle cell click
+        function handleCellClick(event) {
+            const index = event.target.dataset.index;
+
+            if (gameBoard[index] !== '') {
+                return; // Cell already filled
+            }
+
+            gameBoard[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+
+            if (checkWinner()) {
+                statusElement.textContent = `Player ${currentPlayer} wins!`;
+                boardElement.removeEventListener('click', handleCellClick); // Disable further clicks
+                return;
+            }
+
+            // Switch players
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            statusElement.textContent = `Player ${currentPlayer}'s turn`;
+
+            if (gameBoard.every(cell => cell !== '')) {
+                statusElement.textContent = "It's a draw!";
+            }
         }
-      }
 
-      displayWord();
-      displayGuessesLeft();
-      displayIncorrectLetters();
-      checkWinOrLoss();
-    };
+        // Check for a winner
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
 
-    const checkWinOrLoss = () => {
-      if (selectedWord.split("").every((letter) => guessedLetters.includes(letter))) {
-        endGame("Congratulations! You won!");
-      } else if (guessesLeft === 0) {
-        endGame(`You lost! The word was "${selectedWord}".`);
-      }
-    };
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-    const endGame = (message) => {
-      gameOver = true;
-      const popup = document.getElementById("popup");
-      const popupMessage = document.getElementById("popup-message");
-      popupMessage.textContent = message;
-      popup.style.display = "flex";
-    };
+        // Reset the game
+        resetBtn.addEventListener('click', resetGame);
 
-    const resetGame = () => {
-      selectedWord = words[Math.floor(Math.random() * words.length)];
-      guessedLetters = [];
-      guessedIncorrect = [];
-      guessesLeft = 8;
-      clearCanvas();
-      init();
-      gameOver = false;
-    };
-
-    const clearCanvas = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
-
-    window.onload = () => {
-      init();
-      // Focus on the input field to trigger keyboard
-      document.getElementById("keyboard-input").focus();
-    };
-
-    // Function to handle keyboard events
-    document.getElementById("keyboard-input").addEventListener("keydown", (event) => {
-      if (event.keyCode >= 65 && event.keyCode <= 90) {
-        const letter = String.fromCharCode(event.keyCode).toLowerCase();
-        guess(letter);
-      }
-    });
-
-    // Play again button click event
-    document.getElementById("play-again-btn").addEventListener("click", () => {
-      const popup = document.getElementById("popup");
-      popup.style.display = "none";
-      resetGame();
-    });
-  </script>
+        function resetGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            statusElement.textContent = "Player X's turn";
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => cell.textContent = '');
+            boardElement.addEventListener('click', handleCellClick);
+        }
+    </script>
 </body>
 </html>

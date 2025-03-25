@@ -200,56 +200,117 @@
             statusElement.textContent = 'Player ' + currentPlayer + "'s turn";
 
             if (gameBoard.every(function(cell) { return cell !== ''; })) {
-                statusElement.textContent = "It's a draw!";
-            }
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technik Programista</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #C1121F;
+            color: #FFFFFF;
+            text-align: center;
         }
 
-        // Check for a winner
-        function checkWinner() {
-            var winPatterns = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6]
-            ];
-
-            for (var i = 0; i < winPatterns.length; i++) {
-                var pattern = winPatterns[i];
-                var a = pattern[0], b = pattern[1], c = pattern[2];
-
-                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-                    return true;
-                }
-            }
-            return false;
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        // Reset the game
-        resetBtn.addEventListener('click', resetGame);
-
-        function resetGame() {
-            gameBoard = ['', '', '', '', '', '', '', '', ''];
-            currentPlayer = 'X';
-            statusElement.textContent = "Player X's turn";
-            var cells = document.querySelectorAll('.cell');
-            for (var i = 0; i < cells.length; i++) {
-                cells[i].textContent = '';
-            }
-            boardElement.addEventListener('click', handleCellClick);
-            overlay.style.display = 'none'; // Hide the overlay
-            popup.style.display = 'none'; // Hide the popup
+        header {
+            background-color: #780000;
+            padding: 20px 0;
         }
 
-        // Restart game when the popup restart button is clicked
-        restartBtn.addEventListener('click', function() {
-            resetGame();
-            overlay.style.display = 'none'; // Hide the overlay
-            popup.style.display = 'none'; // Hide the popup
-        });
-    </script>
+        header h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        section {
+            padding: 40px 0;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #F4D03F;
+        }
+
+        footer {
+            background-color: #780000;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        footer p {
+            font-size: 0.9em;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Technik Programista</h1>
+        </div>
+    </header>
+
+    <section class="subjects">
+        <div class="container">
+            <h2>Przedmioty zawodowe</h2>
+            <ul>
+                <li>🟡 Przygotowanie do zawodu programisty</li>
+                <li>🟡 Bazy danych</li>
+                <li>🟡 Strony i aplikacje internetowe</li>
+                <li>🟡 Podstawy programowania</li>
+                <li>🟡 Aplikacje desktopowe i mobilne</li>
+                <li>🟡 Aplikacje webowe</li>
+                <li>🟡 Tworzenie stron i aplikacji internetowych</li>
+                <li>🟡 Tworzenie aplikacji desktopowych</li>
+                <li>🟡 Tworzenie aplikacji mobilnych</li>
+                <li>🟡 Tworzenie aplikacji webowych</li>
+                <li>🟡 Tworzenie i zarządzanie bazami danych</li>
+                <li>🟡 Język angielski zawodowy</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="skills">
+        <div class="container">
+            <h2>Umiejętności</h2>
+            <ul>
+                <li>🟡 Tworzenie i administrowanie stronami internetowymi</li>
+                <li>🟡 Tworzenie i użytkowanie relacyjnych baz danych</li>
+                <li>🟡 Programowanie aplikacji internetowych</li>
+                <li>🟡 Tworzenie i administrowanie systemami CMS</li>
+                <li>🟡 Projektowanie i testowanie aplikacji webowych</li>
+                <li>🟡 Programowanie aplikacji desktopowych</li>
+                <li>🟡 Programowanie aplikacji mobilnych</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Technik Programista. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
 </body>
 </html>

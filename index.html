@@ -13,6 +13,8 @@
             height: 100vh;
             display: block;
             background-color: #f4f4f4;
+            user-select: none; /* Disable text selection */
+            position: relative;
         }
 
         .container {
@@ -75,9 +77,71 @@
                 line-height: 80px;
             }
         }
+
+        /* Popup styling */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            z-index: 999; /* Ensure popup is above everything else */
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #45a049;
+        }
+
+        /* Shadow overlay styling */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark background */
+            z-index: 998; /* Ensure overlay is below the popup */
+            display: none; /* Hidden by default */
+        }
+
+        /* Arrow link in top left corner */
+        .arrow-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            text-decoration: none;
+            color: #333;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .arrow-link:before {
+            content: '←'; /* Left arrow character */
+            font-size: 40px; /* Adjust size of arrow */
+        }
+
     </style>
 </head>
 <body>
+    <a href="https://example.com" class="arrow-link" title="Go Back"></a> <!-- Arrow link -->
+
+    <div class="overlay" id="overlay"></div>
+
     <div class="container">
         <div class="board" id="board">
             <!-- 9 divs will be created here dynamically -->
@@ -86,12 +150,22 @@
         <button class="reset" id="resetBtn">Reset Game</button>
     </div>
 
+    <!-- Popup message -->
+    <div class="popup" id="popup">
+        <div id="popupMessage"></div>
+        <button id="restartBtn">Restart Game</button>
+    </div>
+
     <script>
         var currentPlayer = 'X';
         var gameBoard = ['', '', '', '', '', '', '', '', ''];
         var boardElement = document.getElementById('board');
         var statusElement = document.getElementById('status');
         var resetBtn = document.getElementById('resetBtn');
+        var popup = document.getElementById('popup');
+        var popupMessage = document.getElementById('popupMessage');
+        var restartBtn = document.getElementById('restartBtn');
+        var overlay = document.getElementById('overlay');
 
         // Create the game board dynamically
         for (var i = 0; i < 9; i++) {
@@ -114,7 +188,9 @@
             event.target.textContent = currentPlayer;
 
             if (checkWinner()) {
-                statusElement.textContent = 'Player ' + currentPlayer + ' wins!';
+                popupMessage.textContent = 'Player ' + currentPlayer + ' wins!';
+                popup.style.display = 'block'; // Show the popup
+                overlay.style.display = 'block'; // Show the overlay
                 boardElement.removeEventListener('click', handleCellClick); // Disable further clicks
                 return;
             }
@@ -164,7 +240,16 @@
                 cells[i].textContent = '';
             }
             boardElement.addEventListener('click', handleCellClick);
+            overlay.style.display = 'none'; // Hide the overlay
+            popup.style.display = 'none'; // Hide the popup
         }
+
+        // Restart game when the popup restart button is clicked
+        restartBtn.addEventListener('click', function() {
+            resetGame();
+            overlay.style.display = 'none'; // Hide the overlay
+            popup.style.display = 'none'; // Hide the popup
+        });
     </script>
 </body>
 </html>
